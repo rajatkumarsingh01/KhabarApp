@@ -1,4 +1,5 @@
 package com.example.khabarapp.ui
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -15,6 +16,7 @@ import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.example.khabarapp.R
 import com.example.khabarapp.Utils
+import com.example.khabarapp.db.Article
 import com.example.khabarapp.db.SavedArticle
 import com.example.khabarapp.db.Source
 import com.example.khabarapp.mvvm.NewsDatabase
@@ -53,6 +55,7 @@ class FragmentArticle : Fragment() {
         //initialize the views of Article frag
 
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
+        val fabShare = view.findViewById<FloatingActionButton>(R.id.fabShare)
 
         val textTitle: TextView = view.findViewById(R.id.tvTitle)
         val tSource: TextView = view.findViewById(R.id.tvSource)
@@ -70,6 +73,11 @@ class FragmentArticle : Fragment() {
         Glide.with(requireActivity())
             .load(args.article.urlToImage)
             .into(imageView)
+        // for share=ing news article
+
+        fabShare.setOnClickListener {
+            shareArticle(args.article)
+        }
 //all the news are saved in the list
         viewModel.getSavedNews.observe(viewLifecycleOwner, Observer { savedArticles ->
             for (savedArticle in savedArticles) {
@@ -111,5 +119,41 @@ class FragmentArticle : Fragment() {
 
     }
 
+    private fun shareArticle(article: Article) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, article.title)
+        shareIntent.putExtra(Intent.EXTRA_TEXT, article.url)
+
+        val shareChooser = Intent.createChooser(shareIntent, "Share via")
+
+        val packageNames = listOf(
+            "com.whatsapp",
+            "com.facebook.orca", // Messenger
+            "org.telegram.messenger",
+            "com.android.mms", // Messages (SMS)
+            "com.google.android.gm" // Gmail
+
+        )
+        val sendIntents = mutableListOf<Intent>()
+        for (packageName in packageNames) {
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_SUBJECT, article.title)
+            intent.putExtra(Intent.EXTRA_TEXT, article.url)
+            intent.setPackage(packageName)
+            if (activity?.packageManager?.resolveActivity(intent, 0) != null) {
+                sendIntents.add(intent)
+            }
+        }
+
+        if (sendIntents.isNotEmpty()) {
+            shareChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, sendIntents.toTypedArray())
+            startActivity(shareChooser)
+        } else {
+            Toast.makeText(context, "No app found to share", Toast.LENGTH_SHORT).show()
+        }
+
+    }
     }
 
