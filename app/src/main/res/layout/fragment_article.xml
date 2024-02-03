@@ -31,8 +31,9 @@
         <androidx.cardview.widget.CardView
             android:layout_margin="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             app:cardCornerRadius="10dp"
+            android:layout_marginBottom="5dp"
             app:cardElevation="10dp">
 
             <LinearLayout
@@ -96,29 +97,43 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Existing FAB for saving -->
+        <!-- Main FAB containing two additional FABs -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/more"
+            android:layout_gravity="bottom|end"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="5dp"
+            app:fabSize="normal"/>
+
+        <!-- Share FAB -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_share"
-            android:layout_gravity="bottom|right"
+            android:layout_gravity="bottom|end"
             android:layout_marginTop="2dp"
-            android:layout_marginEnd="15dp"
+            android:layout_marginEnd="25dp"
             android:layout_marginStart="15dp"
-            app:fabSize="normal"/>
+            android:visibility="gone"
+            app:fabSize="mini"/>
 
-        <!-- New FAB for sharing -->
+        <!-- Save FAB -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
+            android:id="@+id/fabSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_bookmark_24"
             android:layout_gravity="bottom|end"
-        android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="5dp"
-            app:fabSize="normal"/>
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="15dp"
+            android:visibility="gone"
+            app:fabSize="mini"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

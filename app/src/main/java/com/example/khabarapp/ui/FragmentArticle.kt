@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -30,6 +31,12 @@ class FragmentArticle : Fragment() {
     lateinit var viewModel:NewsViewModel
     lateinit var args: FragmentArticleArgs
      var stringCheck=""
+    private lateinit var fabShare: FloatingActionButton
+    private lateinit var fab:FloatingActionButton
+    private lateinit var fabSave: FloatingActionButton
+    private var isFabMenuOpen = false
+
+
 
 
     override fun onCreateView(
@@ -53,9 +60,13 @@ class FragmentArticle : Fragment() {
         args=FragmentArticleArgs.fromBundle(requireArguments())
 
         //initialize the views of Article frag
+         fab =view.findViewById<FloatingActionButton>(R.id.fab)
+         fabSave = view.findViewById<FloatingActionButton>(R.id.fabSave)
+         fabShare = view.findViewById<FloatingActionButton>(R.id.fabShare)
 
-        val fab = view.findViewById<FloatingActionButton>(R.id.fab)
-        val fabShare = view.findViewById<FloatingActionButton>(R.id.fabShare)
+        // Set initial visibility of sub FABs to GONE
+        fabSave.visibility = View.GONE
+        fabShare.visibility = View.GONE
 
         val textTitle: TextView = view.findViewById(R.id.tvTitle)
         val tSource: TextView = view.findViewById(R.id.tvSource)
@@ -75,8 +86,18 @@ class FragmentArticle : Fragment() {
             .into(imageView)
         // for share=ing news article
 
+        fab.setOnClickListener {
+            if (isFabMenuOpen) {
+                closeFabMenu()
+            } else {
+                openFabMenu()
+            }
+
+        }
+
         fabShare.setOnClickListener {
             shareArticle(args.article)
+            closeFabMenu()
         }
 //all the news are saved in the list
         viewModel.getSavedNews.observe(viewLifecycleOwner, Observer { savedArticles ->
@@ -88,7 +109,7 @@ class FragmentArticle : Fragment() {
             }
         })
 
-        fab.setOnClickListener {
+        fabSave.setOnClickListener {
             val article = args.article // Extract article to a local variable
             if (article != null) { // Check if article is not null
                 if (article.title == stringCheck) {
@@ -115,8 +136,24 @@ class FragmentArticle : Fragment() {
                 Log.e("fragArg", "Article is null")
                 // Handle null article case here if needed
             }
+            closeFabMenu()
         }
 
+    }
+
+    private fun openFabMenu() {
+        fabShare.visibility = View.VISIBLE
+        fabSave.visibility = View.VISIBLE
+        fab.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.fab_icon_close))
+
+        isFabMenuOpen = true
+    }
+
+    private fun closeFabMenu() {
+        fabShare.visibility = View.GONE
+        fabSave.visibility = View.GONE
+        fab.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.fab_icon_more))
+        isFabMenuOpen = false
     }
 
     private fun shareArticle(article: Article) {
